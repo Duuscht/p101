@@ -1,2 +1,2 @@
 # p101
-Wizard
+Wizard web page
