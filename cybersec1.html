@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🛡️ Cybersicherheit</title>
+  <link rel="icon" href="https://www.google.com/s2/favicons?domain=google.com&sz=32" type="image/png">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0f0f13; --surface: #18181f; --border: #2a2a38;
+      --accent: #c8a96e; --accent2: #7eb8a4; --text: #e8e4dc;
+      --muted: #7a7880;
+    }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg); color: var(--text);
+      min-height: 100vh; padding: 2rem 1.5rem 4rem;
+      background-image:
+        radial-gradient(ellipse 60% 40% at 80% 10%, rgba(200,169,110,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 50% at 10% 80%, rgba(126,184,164,0.06) 0%, transparent 60%);
+    }
+    header {
+      max-width: 900px; margin: 0 auto 1.5rem;
+      display: flex; align-items: baseline; justify-content: space-between;
+      border-bottom: 1px solid var(--border); padding-bottom: 1.2rem;
+    }
+    header h1 { font-family: 'DM Serif Display', serif; font-size: 2rem; color: var(--accent); letter-spacing: -0.02em; }
+    header p { font-size: 0.78rem; color: var(--muted); font-weight: 300; }
+
+    .search-wrap { max-width: 900px; margin: 0 auto 2rem; position: relative; }
+    .search-wrap input {
+      width: 100%; padding: 0.75rem 1rem 0.75rem 2.8rem;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; color: var(--text); font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem; outline: none; transition: border-color 0.2s;
+    }
+    .search-wrap input:focus { border-color: var(--accent); }
+    .search-wrap input::placeholder { color: var(--muted); }
+    .search-icon { position: absolute; left: 0.9rem; top: 50%; transform: translateY(-50%); font-size: 1rem; pointer-events: none; }
+    .search-count { position: absolute; right: 0.9rem; top: 50%; transform: translateY(-50%); font-size: 0.72rem; color: var(--muted); }
+    .no-results { max-width: 900px; margin: 0 auto; text-align: center; color: var(--muted); font-size: 0.9rem; padding: 2rem; display: none; }
+
+    main { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; }
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.4rem 1.4rem 1.2rem;
+      transition: border-color 0.2s, transform 0.2s; animation: fadeUp 0.4s ease both;
+    }
+    .card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .card.hidden { display: none; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+    .card-header { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1rem; }
+    .card-icon { width: 32px; height: 32px; border-radius: 8px; display: grid; place-items: center; font-size: 1rem; flex-shrink: 0; }
+    .card-title { font-family: 'DM Serif Display', serif; font-size: 1.05rem; color: var(--text); }
+    .c-gold   .card-icon { background: rgba(200,169,110,0.15); }
+    .c-teal   .card-icon { background: rgba(126,184,164,0.15); }
+    .c-red    .card-icon { background: rgba(224,112,112,0.15); }
+    .c-blue   .card-icon { background: rgba(110,160,210,0.15); }
+    .c-purple .card-icon { background: rgba(170,130,210,0.15); }
+    .c-green  .card-icon { background: rgba(130,200,140,0.15); }
+    ul { list-style: none; }
+    ul li { margin-bottom: 0.3rem; }
+    ul li.hidden { display: none; }
+    ul li a {
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.45rem 0.6rem; border-radius: 7px; text-decoration: none;
+      font-size: 0.875rem; color: var(--text); font-weight: 400;
+      transition: background 0.15s, color 0.15s; word-break: break-all;
+    }
+    ul li a:hover { background: rgba(255,255,255,0.06); color: var(--accent); }
+    ul li a mark { background: rgba(200,20,20,0.25); color: #ff4444; font-weight: 700; border-radius: 2px; padding: 0 1px; }
+    .favicon { width: 16px; height: 16px; border-radius: 3px; flex-shrink: 0; object-fit: contain; vertical-align: middle; }
+
+    .list-divider {
+      display: block;
+      font-size: 0.68rem; font-weight: 500; letter-spacing: 1.2px; text-transform: uppercase;
+      color: #b8d4f0;
+      background: rgba(60,100,160,0.35);
+      border-radius: 4px;
+      padding: 3px 8px;
+      margin: 0.55rem 0 0.25rem;
+    }
+
+    .info-box {
+      max-width: 900px; margin: 2.5rem auto 0;
+      background: rgba(126,184,164,0.07); border: 1px solid rgba(126,184,164,0.2);
+      border-radius: 10px; padding: 1rem 1.4rem; font-size: 0.8rem; color: var(--muted); line-height: 1.6;
+    }
+    .info-box strong { color: var(--accent2); }
+
+    .edit-note {
+      max-width: 900px; margin: 1rem auto 0;
+      background: rgba(110,160,210,0.07); border: 1px solid rgba(110,160,210,0.2);
+      border-radius: 10px; padding: 1rem 1.4rem; font-size: 0.8rem; color: #7a9ab8; line-height: 1.6;
+    }
+    .edit-note strong { color: #9dbfda; }
+
+    .version-bar {
+      max-width: 900px; margin: 1.5rem auto 0;
+      text-align: center; font-size: 0.75rem; color: #4a4858;
+      border-top: 1px solid #2a2a38; padding-top: 1rem;
+    }
+    .version-bar .v-num { color: #39c96e; font-weight: 700; font-size: 0.8rem; }
+
+    .quote-banner {
+      max-width: 900px; margin: 0 auto 2rem;
+      background: linear-gradient(135deg, rgba(200,169,110,0.06) 0%, rgba(126,184,164,0.06) 100%);
+      border: 1px solid rgba(200,169,110,0.2);
+      border-left: 3px solid var(--accent);
+      border-radius: 10px; padding: 1.2rem 1.6rem;
+      position: relative; overflow: hidden;
+      animation: fadeUp 0.7s ease both;
+    }
+    .quote-banner::before {
+      content: '\201C';
+      position: absolute; top: -0.2rem; left: 0.8rem;
+      font-size: 4rem; color: rgba(200,169,110,0.12);
+      font-family: 'DM Serif Display', serif; line-height: 1;
+      pointer-events: none;
+    }
+    .quote-label {
+      font-size: 0.65rem; letter-spacing: 2.5px; text-transform: uppercase;
+      color: var(--accent); opacity: 0.65; margin-bottom: 0.6rem;
+    }
+    .quote-text {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(0.9rem, 1.8vw, 1.05rem);
+      color: var(--text); line-height: 1.65;
+      font-style: italic; padding-left: 0.5rem;
+      min-height: 2.5rem;
+    }
+    .quote-text.loading {
+      color: var(--muted);
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    .quote-author {
+      font-size: 0.78rem; color: var(--accent2);
+      margin-top: 0.6rem; padding-left: 0.5rem;
+      letter-spacing: 0.5px;
+    }
+    .quote-footer {
+      display: flex; align-items: center;
+      justify-content: space-between; margin-top: 0.5rem;
+    }
+    .quote-source {
+      font-size: 0.65rem; color: var(--muted); letter-spacing: 1px;
+    }
+    .quote-refresh {
+      background: none; border: 1px solid rgba(200,169,110,0.2);
+      cursor: pointer; color: var(--muted); font-size: 0.72rem;
+      padding: 0.2rem 0.6rem; border-radius: 4px;
+      transition: color 0.2s, border-color 0.2s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .quote-refresh:hover { color: var(--accent); border-color: rgba(200,169,110,0.5); }
+    .quote-refresh:disabled { opacity: 0.4; cursor: not-allowed; }
+    @keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:.9} }
+
+    .nav-btn-wrap { max-width:900px; margin:2rem auto 0; text-align:center; display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
+    .nav-btn { display:inline-flex; align-items:center; gap:0.6rem; background:rgba(200,169,110,0.1); border:1px solid rgba(200,169,110,0.35); color:var(--accent); font-family:'DM Sans',sans-serif; font-size:0.85rem; font-weight:500; padding:0.7rem 1.6rem; border-radius:8px; text-decoration:none; transition:background 0.2s,border-color 0.2s; }
+    .nav-btn:hover { background:rgba(200,169,110,0.18); border-color:var(--accent); }
+    .nav-btn.secondary { border-color:rgba(126,184,164,0.35); color:var(--accent2); background:rgba(126,184,164,0.07); }
+    .nav-btn.secondary:hover { background:rgba(126,184,164,0.15); border-color:var(--accent2); }
+    .cross-results { max-width:900px; margin:0 auto 1.5rem; background:rgba(126,184,164,0.06); border:1px solid rgba(126,184,164,0.2); border-radius:10px; padding:0.8rem 1rem; display:none; }
+    .cross-header { font-size:0.7rem; letter-spacing:2px; text-transform:uppercase; color:var(--accent2); margin-bottom:0.6rem; opacity:0.8; }
+    .cross-item { display:flex; align-items:center; gap:0.5rem; padding:0.4rem 0.5rem; border-radius:6px; text-decoration:none; transition:background 0.15s; margin-bottom:0.2rem; overflow:hidden; }
+    .cross-item:hover { background:rgba(255,255,255,0.05); }
+    .cross-badge { font-size:0.65rem; background:rgba(126,184,164,0.15); color:var(--accent2); border-radius:3px; padding:1px 5px; white-space:nowrap; flex-shrink:0; }
+    .cross-label { font-size:0.875rem; color:var(--text); flex:1; word-break:break-word; }
+    .cross-label mark { background:rgba(200,169,110,0.3); color:var(--accent); font-weight:700; border-radius:2px; }
+    .cross-rubrik { font-size:0.68rem; color:var(--muted); opacity:0.7; flex-shrink:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:120px; }
+
+    .link-row {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    .link-row a {
+      flex: 1;
+      min-width: 0;
+    }
+    .info-btn {
+      flex-shrink: 0;
+      background: rgba(200,169,110,0.1);
+      border: 1px solid rgba(200,169,110,0.2);
+      border-radius: 5px;
+      color: var(--accent);
+      cursor: pointer;
+      font-size: 0.68rem;
+      font-family: 'DM Sans', sans-serif;
+      padding: 0.28rem 0.42rem;
+      line-height: 1;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .info-btn:hover {
+      background: rgba(200,169,110,0.2);
+      border-color: rgba(200,169,110,0.45);
+    }
+    .info-btn.active {
+      background: rgba(200,169,110,0.18);
+      border-color: var(--accent);
+    }
+    .link-info {
+      display: none;
+      margin: 0.1rem 0.5rem 0.35rem 2.35rem;
+      background: rgba(126,184,164,0.06);
+      border: 1px solid rgba(126,184,164,0.16);
+      border-radius: 7px;
+      padding: 0.45rem 0.7rem;
+      font-size: 0.76rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+    .link-info.visible {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>🛡️ Cybersicherheit</h1>
+</header>
+<div class="search-wrap">
+  <span class="search-icon">🔍</span>
+  <input type="text" id="search" placeholder="Link suchen..." autocomplete="off">
+  <span class="search-count" id="searchCount"></span>
+</div>
+<div class="no-results" id="noResults" style="display:none">Kein Treffer</div>
+<div class="cross-results" id="crossResults"></div>
+<main id="main">
+
+  <!-- DATENSCHUTZ & ANONYMITAET -->
+  <div class="card c-gold">
+    <div class="card-header"><div class="card-icon">🔒</div><span class="card-title">Datenschutz & Anonymität</span></div>
+    <ul>
+<li><div class="link-row"><a href="https://duckduckgo.com" target="_blank" rel="noopener noreferrer"><img class="favicon" src="https://www.google.com/s2/favicons?domain=duckduckgo.com" alt="">DuckDuckGo</a><button class="info-btn" type="button" aria-label="Info">ⓘ</button></div><div class="link-info">Suchmaschine mit Fokus auf Datenschutz. Reduziert Tracking und nutzt mehr Privatsphäre-Optionen. Weniger Profiling.</div></li>
+<li><div class="link-row"><a href="https://haveibeenpwned.com" target="_blank" rel="noopener noreferrer"><img class="favicon" src="https://www.google.com/s2/favicons?domain=haveibeenpwned.com" alt="">Have I Been Pwned</a><button class="info-btn" type="button" aria-label="Info">ⓘ</button></div><div class="link-info">Prüft, ob E-Mail-Adressen in Datenlecks auftauchen. Hilft beim gezielten Wechseln & Absichern von Konten. Leak-Check.</div></li>
+<li><div class="link-row"><a href="https://privacybadger.org" target="_blank" rel="noopener noreferrer"><img class="favicon" src="https://www.google.com/s2/favicons?domain=privacybadger.org" alt="">Privacy Badger</a><button class="info-btn" type="button" aria-label="Info">ⓘ</button></div><div class="link-info">Blockiert bzw. begrenzt Werbe- und Tracking-Skripte, die Nutzer sonst über Seiten hinweg verfolgen. Tracking reduzieren.</div></li>
+<li><div class="link-row"><a href="https://torproject.org" target="_blank" rel="noopener noreferrer"><img class="favicon" src="https://www.google.com/s2/favicons?domain=torproject.org" alt="">Tor Browser</a><button class="info-btn" type="button" aria-label="Info">ⓘ</button></div><div class="link-info">Leitet Verbindungen über mehrere Knoten, um IP & Aktivität zu verschleiern. Wichtig: sicher konfigurieren und keine sensiblen Logins nutzen. Anonym surfen.</div></li>
+    </ul>
+  </div>
+
+  <!-- INFORMATIONSQUELLEN -->
+  <div class="card c-teal">
+    <div class="card-header"><div class="card-icon">📚</div><span class="card-title">Informationsquellen</span></div>
+    <ul>
+<li><div class="link-row"><a href="https://www.bsi.bund.de" target="_blank" rel="noopener noreferrer"><img class="favicon" src="https://www.google.com/s2/favicons?domain=bsi.bund.de" alt="">BSI – Bundesamt für IT-Sicherheit</a><button class="info-btn" type="button" aria-label="Info">ⓘ</button></div><div class="link-info">Offizielle Leitfäden, Warnungen und Empfehlungen zu IT-Sicherheit in verständlicher Form. Verlässliche Infos.</div></li>
+<li><div class="link-row"><a href="https://www.eff.org" target="_blank" rel="noopener noreferrer"><img class="favicon" src="https://www.google.com/s2/favicons?domain=eff.org" alt="">EFF – Electronic Frontier Foundation</a><button class="info-btn" type="button" aria-label="Info">ⓘ</button></div><div class="link-info">Starker Fokus auf digitale Rechte, Privatsphäre & Sicherheit. Gute Ratgeber und Hintergrundanalysen. Digitale Freiheitsrechte.</div></li>
+<li><div class="link-row"><a href="https://www.heise.de/security" target="_blank" rel="noopener noreferrer"><img class="favicon" src="https://www.google.com/s2/favicons?domain=heise.de" alt="">Heise Security</a><button class="info-btn" type="button" aria-label="Info">ⓘ</button></div><div class="link-info">Nachrichten und Analysen zu Schwachstellen, Angriffen und Sicherheits-Trends – meist mit praxisnaher Einordnung. Aktuelle Security-News.</div></li>
+<li><div class="link-row"><a href="https://www.kuketz-blog.de" target="_blank" rel="noopener noreferrer"><img class="favicon" src="https://www.google.com/s2/favicons?domain=kuketz-blog.de" alt="">Kuketz IT-Security Blog</a><button class="info-btn" type="button" aria-label="Info">ⓘ</button></div><div class="link-info">Praxis- und Verbraucher-orientierte Sicherheitsartikel, oft mit klaren Handlungsempfehlungen gegen typische Risiken. Verständliche Warnungen.</div></li>
+    </ul>
+  </div>
+
+  <!-- PASSWORT-MANAGER -->
+  <div class="card c-red">
+    <div class="card-header"><div class="card-icon">🔐</div><span class="card-title">Passwort-Manager</span></div>
+    <ul>
+<li><div class="link-row"><a href="https://1password.com" target="_blank" rel="noopener noreferrer"><img class="favicon" src="https://www.google.com/s2/favicons?domain=1password.com" alt="">1Password</a><button class="info-btn" type="button" aria-label="Info">ⓘ</button></div><div class="link-info">Passwort-Manager mit starkem Sicherheitsfokus: sichere Speicherung, Auto-Ausfüllen und hilfreiche Schutzfunktionen. Passwörter sicher verwalten.</div></li>
+<li><div class="link-row"><a href="https://bitwarden.com" target="_blank" rel="noopener noreferrer"><img class="favicon" src="https://www.google.com/s2/favicons?domain=bitwarden.com" alt="">Bitwarden</a><button class="info-btn" type="button" aria-label="Info">ⓘ</button></div><div class="link-info">Passwort-Manager (auch im Free-Plan) für sichere, verschlüsselte Passwörter und einfache Gerätesynchronisation. Günstig & sicher.</div></li>
+<li><div class="link-row"><a href="https://dashlane.com" target="_blank" rel="noopener noreferrer"><img class="favicon" src="https://www.google.com/s2/favicons?domain=dashlane.com" alt="">Dashlane</a><button class="info-btn" type="button" aria-label="Info">ⓘ</button></div><div class="link-info">Komfortabler Passwort-Manager mit Sicherheits-Features und Ausfüll-Funktionen. Hilft beim Sichern vieler Konten. Bequeme Passwortverwaltung.</div></li>
+<li><div class="link-row"><a href="https://keepass.info" target="_blank" rel="noopener noreferrer"><img class="favicon" src="https://www.google.com/s2/favicons?domain=keepass.info" alt="">KeePass</a><button class="info-btn" type="button" aria-label="Info">ⓘ</button></div><div class="link-info">Lokaler Passwort-Speicher (Datenbank). Gut, wenn du möglichst Kontrolle und Offline-orientierten Betrieb willst. Privat & lokal.</div></li>
+<li><div class="link-row"><a href="https://nordpass.com" target="_blank" rel="noopener noreferrer"><img class="favicon" src="https://www.google.com/s2/favicons?domain=nordpass.com" alt="">NordPass</a><button class="info-btn" type="button" aria-label="Info">ⓘ</button></div><div class="link-info">Passwort-Manager aus dem Nord-Ökosystem. Ziel: sichere Speicherung, automatische Eingabe und bessere Passwort-Hygiene. Passwörter automatisieren.</div></li>
+    </ul>
+  </div>
+
+  <!-- VPN-DIENSTE -->
+  <div class="card c-blue">
+    <div class="card-header"><div class="card-icon">🌐</div><span class="card-title">VPN-Dienste</span></div>
+    <ul>
+<li><div class="link-row"><a href="https://mullvad.net" target="_blank" rel="noopener noreferrer"><img class="favicon" src="https://www.google.com/s2/favicons?domain=mullvad.net" alt="">Mullvad VPN</a><button class="info-btn" type="button" aria-label="Info">ⓘ</button></div><div class="link-info">VPN mit Fokus auf Privatsphäre und weniger Identitätsbezug. Eignet sich für verschlüsselten Traffic unterwegs. IP verstecken.</div></li>
+<li><div class="link-row"><a href="https://nordvpn.com" target="_blank" rel="noopener noreferrer"><img class="favicon" src="https://www.google.com/s2/favicons?domain=nordvpn.com" alt="">NordVPN</a><button class="info-btn" type="button" aria-label="Info">ⓘ</button></div><div class="link-info">Weit verbreiteter VPN-Dienst. Kann helfen, IP/Standort-Anzeigen zu reduzieren und Traffic zu verschlüsseln. Verschlüsselter Zugang.</div></li>
+<li><div class="link-row"><a href="https://protonvpn.com" target="_blank" rel="noopener noreferrer"><img class="favicon" src="https://www.google.com/s2/favicons?domain=protonvpn.com" alt="">ProtonVPN</a><button class="info-btn" type="button" aria-label="Info">ⓘ</button></div><div class="link-info">VPN vom Proton-Umfeld. Ziel ist Privatsphäre und sichere Verbindung – insbesondere bei unsicheren Netzwerken. Mehr Schutz online.</div></li>
+<li><div class="link-row"><a href="https://windscribe.com" target="_blank" rel="noopener noreferrer"><img class="favicon" src="https://www.google.com/s2/favicons?domain=windscribe.com" alt="">Windscribe</a><button class="info-btn" type="button" aria-label="Info">ⓘ</button></div><div class="link-info">VPN mit zusätzlichen Schutzfunktionen. Kann helfen, Datenverkehr zu verschlüsseln und Tracking zu reduzieren. VPN + Schutz.</div></li>
+    </ul>
+  </div>
+
+  <!-- SICHERE KOMMUNIKATION -->
+  <div class="card c-purple">
+    <div class="card-header"><div class="card-icon">💬</div><span class="card-title">Sichere Kommunikation</span></div>
+    <ul>
+<li><div class="link-row"><a href="https://briarproject.org" target="_blank" rel="noopener noreferrer"><img class="favicon" src="https://www.google.com/s2/favicons?domain=briarproject.org" alt="">Briar</a><button class="info-btn" type="button" aria-label="Info">ⓘ</button></div><div class="link-info">Messenger für zensurresistente Kommunikation. Nutzt unter anderem Offline-/Netzwerk-Umwege für die Verbindung. Resilient kommunizieren.</div></li>
+<li><div class="link-row"><a href="https://element.io" target="_blank" rel="noopener noreferrer"><img class="favicon" src="https://www.google.com/s2/favicons?domain=element.io" alt="">Element (Matrix)</a><button class="info-btn" type="button" aria-label="Info">ⓘ</button></div><div class="link-info">Client für das Matrix-Ökosystem. Unterstützt verschlüsselte Chats und föderierte Kommunikation. Matrix nutzen.</div></li>
+<li><div class="link-row"><a href="https://mail.proton.me" target="_blank" rel="noopener noreferrer"><img class="favicon" src="https://www.google.com/s2/favicons?domain=mail.proton.me" alt="">ProtonMail</a><button class="info-btn" type="button" aria-label="Info">ⓘ</button></div><div class="link-info">E-Mail-Dienst mit Fokus auf Privatsphäre. Ziel: sichere Kommunikation, stärkere Kontrolle über Daten. E-Mail schützen.</div></li>
+<li><div class="link-row"><a href="https://signal.org" target="_blank" rel="noopener noreferrer"><img class="favicon" src="https://www.google.com/s2/favicons?domain=signal.org" alt="">Signal</a><button class="info-btn" type="button" aria-label="Info">ⓘ</button></div><div class="link-info">Messenger mit starker Ende-zu-Ende-Verschlüsselung. Sehr bekannt für private Chats und Gruppenkommunikation. Ende-zu-Ende.</div></li>
+<li><div class="link-row"><a href="https://threema.ch" target="_blank" rel="noopener noreferrer"><img class="favicon" src="https://www.google.com/s2/favicons?domain=threema.ch" alt="">Threema</a><button class="info-btn" type="button" aria-label="Info">ⓘ</button></div><div class="link-info">Messenger mit Fokus auf Privatsphäre und sicherer Übertragung. Gut, wenn du eine einfache, datensparsame Lösung suchst. Privater Chat.</div></li>
+<li><div class="link-row"><a href="https://wire.com" target="_blank" rel="noopener noreferrer"><img class="favicon" src="https://www.google.com/s2/favicons?domain=wire.com" alt="">Wire</a><button class="info-btn" type="button" aria-label="Info">ⓘ</button></div><div class="link-info">Kommunikationsplattform für Chats/Calls mit Sicherheitsfokus. Häufig genutzt für Teams und private Gespräche. Sicher kommunizieren.</div></li>
+    </ul>
+  </div>
+
+  <!-- SICHERHEITS-TOOLS -->
+  <div class="card c-green">
+    <div class="card-header"><div class="card-icon">🛡️</div><span class="card-title">Sicherheits-Tools</span></div>
+    <ul>
+<li><div class="link-row"><a href="https://adguard.com" target="_blank" rel="noopener noreferrer"><img class="favicon" src="https://www.google.com/s2/favicons?domain=adguard.com" alt="">AdGuard</a><button class="info-btn" type="button" aria-label="Info">ⓘ</button></div><div class="link-info">Werbe- und Tracker-Blocker. Reduziert Tracking und schließt viele „unerwünschte" Skripte beim Surfen aus. Weniger Tracking.</div></li>
+<li><div class="link-row"><a href="https://clamav.net" target="_blank" rel="noopener noreferrer"><img class="favicon" src="https://www.google.com/s2/favicons?domain=clamav.net" alt="">ClamAV</a><button class="info-btn" type="button" aria-label="Info">ⓘ</button></div><div class="link-info">Virenscanner/Antimalware-Engine (Open Source). Nutze ihn z.B. für Dateien/Server-Scans. Malware scannen.</div></li>
+<li><div class="link-row"><a href="https://malwarebytes.com" target="_blank" rel="noopener noreferrer"><img class="favicon" src="https://www.google.com/s2/favicons?domain=malwarebytes.com" alt="">Malwarebytes</a><button class="info-btn" type="button" aria-label="Info">ⓘ</button></div><div class="link-info">Sicherheits-Software zum Erkennen/Entfernen von Malware. Gut als zusätzlicher Scanner neben dem Hauptschutz. Zweite Schutzschicht.</div></li>
+<li><div class="link-row"><a href="https://virustotal.com" target="_blank" rel="noopener noreferrer"><img class="favicon" src="https://www.google.com/s2/favicons?domain=virustotal.com" alt="">VirusTotal</a><button class="info-btn" type="button" aria-label="Info">ⓘ</button></div><div class="link-info">Plattform zum Prüfen von Domains/URLs/Dateien mit mehreren Engines. Hilft beim schnellen „Verdachts-Check". Mehr-Scanner-Analyse.</div></li>
+    </ul>
+  </div>
+
+</main>
+<div class="nav-btn-wrap">
+  <a href="index.html" class="nav-btn secondary">🏠 Zurück zur Startseite</a>
+</div>
+<div class="version-bar">
+  <span class="v-num">Version 4.1</span> &nbsp;·&nbsp; Stand: <span class="v-num">2026-06-19</span> @ 12:08
+</div>
+
+<script>
+var allLinks = [
+  {"l":"DuckDuckGo","u":"https://duckduckgo.com","r":"Datenschutz & Anonymität","s":"cybersec1.html","b":"🛡️"},
+  {"l":"Have I Been Pwned","u":"https://haveibeenpwned.com","r":"Datenschutz & Anonymität","s":"cybersec1.html","b":"🛡️"},
+  {"l":"Privacy Badger","u":"https://privacybadger.org","r":"Datenschutz & Anonymität","s":"cybersec1.html","b":"🛡️"},
+  {"l":"Tor Browser","u":"https://torproject.org","r":"Datenschutz & Anonymität","s":"cybersec1.html","b":"🛡️"},
+  {"l":"BSI – Bundesamt für IT-Sicherheit","u":"https://www.bsi.bund.de","r":"Informationsquellen","s":"cybersec1.html","b":"🛡️"},
+  {"l":"EFF – Electronic Frontier Foundation","u":"https://www.eff.org","r":"Informationsquellen","s":"cybersec1.html","b":"🛡️"},
+  {"l":"Heise Security","u":"https://www.heise.de/security","r":"Informationsquellen","s":"cybersec1.html","b":"🛡️"},
+  {"l":"Kuketz IT-Security Blog","u":"https://www.kuketz-blog.de","r":"Informationsquellen","s":"cybersec1.html","b":"🛡️"},
+  {"l":"1Password","u":"https://1password.com","r":"Passwort-Manager","s":"cybersec1.html","b":"🛡️"},
+  {"l":"Bitwarden","u":"https://bitwarden.com","r":"Passwort-Manager","s":"cybersec1.html","b":"🛡️"},
+  {"l":"Dashlane","u":"https://dashlane.com","r":"Passwort-Manager","s":"cybersec1.html","b":"🛡️"},
+  {"l":"KeePass","u":"https://keepass.info","r":"Passwort-Manager","s":"cybersec1.html","b":"🛡️"},
+  {"l":"NordPass","u":"https://nordpass.com","r":"Passwort-Manager","s":"cybersec1.html","b":"🛡️"},
+  {"l":"Mullvad VPN","u":"https://mullvad.net","r":"VPN-Dienste","s":"cybersec1.html","b":"🛡️"},
+  {"l":"NordVPN","u":"https://nordvpn.com","r":"VPN-Dienste","s":"cybersec1.html","b":"🛡️"},
+  {"l":"ProtonVPN","u":"https://protonvpn.com","r":"VPN-Dienste","s":"cybersec1.html","b":"🛡️"},
+  {"l":"Windscribe","u":"https://windscribe.com","r":"VPN-Dienste","s":"cybersec1.html","b":"🛡️"},
+  {"l":"Briar","u":"https://briarproject.org","r":"Sichere Kommunikation","s":"cybersec1.html","b":"🛡️"},
+  {"l":"Element (Matrix)","u":"https://element.io","r":"Sichere Kommunikation","s":"cybersec1.html","b":"🛡️"},
+  {"l":"ProtonMail","u":"https://mail.proton.me","r":"Sichere Kommunikation","s":"cybersec1.html","b":"🛡️"},
+  {"l":"Signal","u":"https://signal.org","r":"Sichere Kommunikation","s":"cybersec1.html","b":"🛡️"},
+  {"l":"Threema","u":"https://threema.ch","r":"Sichere Kommunikation","s":"cybersec1.html","b":"🛡️"},
+  {"l":"Wire","u":"https://wire.com","r":"Sichere Kommunikation","s":"cybersec1.html","b":"🛡️"},
+  {"l":"AdGuard","u":"https://adguard.com","r":"Sicherheits-Tools","s":"cybersec1.html","b":"🛡️"},
+  {"l":"ClamAV","u":"https://clamav.net","r":"Sicherheits-Tools","s":"cybersec1.html","b":"🛡️"},
+  {"l":"Malwarebytes","u":"https://malwarebytes.com","r":"Sicherheits-Tools","s":"cybersec1.html","b":"🛡️"},
+  {"l":"VirusTotal","u":"https://virustotal.com","r":"Sicherheits-Tools","s":"cybersec1.html","b":"🛡️"}
+];
+</script>
+<script>
+// ── Search & Filter ──────────────────────────────────────────────────────────────
+var searchInput = document.getElementById('search');
+var searchCount = document.getElementById('searchCount');
+var noResults   = document.getElementById('noResults');
+var _origTexts  = new Map();
+
+document.querySelectorAll('div.card li a').forEach(function(a){
+  _origTexts.set(a, a.textContent.trim());
+});
+
+searchInput.addEventListener('input', function() {
+  var q = searchInput.value.trim().toLowerCase();
+  var totalVisible = 0;
+
+  document.querySelectorAll('div.card').forEach(function(card) {
+    var cardHasMatch = false;
+    card.querySelectorAll('li').forEach(function(li) {
+      var a = li.querySelector('a');
+      if (!a) return;
+      var text = _origTexts.get(a) || a.textContent.trim();
+      var img  = a.querySelector('img');
+
+      if (!q) {
+        li.classList.remove('hidden');
+        a.innerHTML = '';
+        if (img) a.appendChild(img);
+        a.appendChild(document.createTextNode(text));
+        cardHasMatch = true;
+      } else if (text.toLowerCase().indexOf(q) >= 0) {
+        li.classList.remove('hidden');
+        cardHasMatch = true;
+        totalVisible++;
+        a.innerHTML = '';
+        if (img) a.appendChild(img);
+        var idx = text.toLowerCase().indexOf(q);
+        var span = document.createElement('span');
+        span.appendChild(document.createTextNode(text.substring(0, idx)));
+        var mark = document.createElement('mark');
+        mark.textContent = text.substring(idx, idx + q.length);
+        span.appendChild(mark);
+        span.appendChild(document.createTextNode(text.substring(idx + q.length)));
+        a.appendChild(span);
+      } else {
+        li.classList.add('hidden');
+      }
+    });
+    card.classList.toggle('hidden', q !== '' && !cardHasMatch);
+  });
+
+  if (!q) {
+    searchCount.textContent = '';
+    noResults.style.display = 'none';
+  } else if (totalVisible === 0) {
+    searchCount.textContent = 'Kein Treffer';
+    noResults.style.display = 'block';
+  } else {
+    searchCount.textContent = totalVisible + ' Treffer';
+    noResults.style.display = 'none';
+  }
+});
+
+// ── Cross-Page Search ───────────────────────────────────────────────────────────
+(function() {
+  var curPage = window.location.pathname.split('/').pop() || 'cybersec1.html';
+  var inp    = document.getElementById('search');
+  var cnt    = document.getElementById('searchCount');
+  var crs    = document.getElementById('crossResults');
+  if (!inp || !crs || typeof allLinks === 'undefined') return;
+
+  inp.addEventListener('input', function() {
+    var q = this.value.trim().toLowerCase();
+    if (!q) { crs.style.display = 'none'; crs.innerHTML = ''; return; }
+
+    var matches = allLinks.filter(function(lnk) {
+      return lnk.s !== curPage &&
+        (lnk.l.toLowerCase().indexOf(q) >= 0 || lnk.r.toLowerCase().indexOf(q) >= 0);
+    });
+
+    if (matches.length > 0) {
+      var safe = q.replace(/[-[\]{}()*+?.,\^$|#]/g, '\\$&');
+      var html = '<div class="cross-header">Auch gefunden auf anderer Seite:</div>';
+      matches.forEach(function(lnk) {
+        var hi = lnk.l.replace(new RegExp('(' + safe + ')', 'gi'), '<mark>$1</mark>');
+        html += '<a href="' + lnk.u + '" target="_blank" rel="noopener noreferrer" class="cross-item">'
+          + '<span class="cross-badge">' + lnk.b + ' ' + lnk.s + '</span>'
+          + '<span class="cross-label">' + hi + '</span>'
+          + '<span class="cross-rubrik">' + lnk.r + '</span></a>';
+      });
+      crs.innerHTML = html;
+      crs.style.display = 'block';
+    } else {
+      crs.style.display = 'none';
+    }
+
+    var localCount = document.querySelectorAll('div.card li:not(.hidden) a').length;
+    var total = localCount + matches.length;
+    cnt.textContent = total === 0 ? 'Kein Treffer' : total + ' Treffer';
+  });
+})();
+
+// ── Personalisierung — localStorage ────────────────────────────────────────────
+(function() {
+  var STORAGE_KEY = 'cybersec-hidden';
+  var editMode    = false;
+  var hiddenLinks = {};
+
+  try {
+    var saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) hiddenLinks = JSON.parse(saved);
+  } catch(e) {}
+
+  function applyHidden() {
+    document.querySelectorAll('div.card li').forEach(function(li) {
+      var a = li.querySelector('a');
+      if (!a) return;
+      var key = a.href;
+      if (hiddenLinks[key]) {
+        li.style.display = editMode ? '' : 'none';
+        li.setAttribute('data-hidden', '1');
+      } else {
+        li.removeAttribute('data-hidden');
+      }
+    });
+  }
+
+  function enterEditMode() {
+    editMode = true;
+    document.querySelectorAll('div.card li').forEach(function(li) {
+      var a = li.querySelector('a');
+      if (!a) return;
+      li.style.display = '';
+      var cb = li.querySelector('.pz-cb');
+      if (!cb) {
+        cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.className = 'pz-cb';
+        cb.checked = !hiddenLinks[a.href];
+        cb.style.cssText = 'margin-right:8px;accent-color:#c8a96e;width:15px;height:15px;cursor:pointer;flex-shrink:0;';
+        cb.addEventListener('change', function() {
+          if (cb.checked) { delete hiddenLinks[a.href]; }
+          else            { hiddenLinks[a.href] = 1; }
+        });
+        li.insertBefore(cb, li.firstChild);
+      }
+      cb.style.display = 'inline-block';
+    });
+    document.getElementById('pz-btn').textContent = '✓ Speichern';
+    document.getElementById('pz-btn').style.borderColor = 'rgba(126,184,164,0.5)';
+    document.getElementById('pz-btn').style.color = 'var(--accent2)';
+    document.getElementById('pz-reset').style.display = 'inline-flex';
+  }
+
+  function exitEditMode() {
+    editMode = false;
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(hiddenLinks)); } catch(e) {}
+    document.querySelectorAll('.pz-cb').forEach(function(cb) { cb.style.display = 'none'; });
+    applyHidden();
+    document.getElementById('pz-btn').textContent = '⚙ Anpassen';
+    document.getElementById('pz-btn').style.borderColor = '';
+    document.getElementById('pz-btn').style.color = '';
+    document.getElementById('pz-reset').style.display = 'none';
+    updateExportCode();
+  }
+
+  function resetAll() {
+    hiddenLinks = {};
+    try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
+    document.querySelectorAll('.pz-cb').forEach(function(cb) { cb.checked = true; });
+    document.querySelectorAll('div.card li').forEach(function(li) {
+      li.removeAttribute('data-hidden');
+      li.style.display = '';
+    });
+  }
+
+  function updateExportCode() {
+    var el = document.getElementById('pz-code');
+    if (!el) return;
+    var keys = Object.keys(hiddenLinks);
+    if (keys.length === 0) { el.value = '(keine Anpassungen)'; return; }
+    el.value = btoa(JSON.stringify(hiddenLinks));
+  }
+
+  function importCode(code) {
+    try {
+      hiddenLinks = JSON.parse(atob(code));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(hiddenLinks));
+      applyHidden();
+      updateExportCode();
+      alert('Einstellungen importiert!');
+    } catch(e) { alert('Ungültiger Code.'); }
+  }
+
+  window.addEventListener('DOMContentLoaded', function() {
+    var wrap = document.querySelector('.nav-btn-wrap');
+    if (!wrap) return;
+
+    var btn = document.createElement('button');
+    btn.id = 'pz-btn';
+    btn.textContent = '⚙ Anpassen';
+    btn.style.cssText = 'display:inline-flex;align-items:center;gap:0.6rem;background:rgba(200,169,110,0.07);border:1px solid rgba(200,169,110,0.25);color:var(--accent);font-family:"DM Sans",sans-serif;font-size:0.85rem;font-weight:500;padding:0.7rem 1.6rem;border-radius:8px;cursor:pointer;transition:background 0.2s,border-color 0.2s;';
+    btn.addEventListener('click', function() {
+      if (!editMode) enterEditMode(); else exitEditMode();
+    });
+    wrap.appendChild(btn);
+
+    var resetBtn = document.createElement('button');
+    resetBtn.id = 'pz-reset';
+    resetBtn.textContent = '↺ Alles anzeigen';
+    resetBtn.style.cssText = 'display:none;align-items:center;gap:0.6rem;background:rgba(220,80,80,0.08);border:1px solid rgba(220,80,80,0.25);color:#e07070;font-family:"DM Sans",sans-serif;font-size:0.85rem;font-weight:500;padding:0.7rem 1.2rem;border-radius:8px;cursor:pointer;';
+    resetBtn.addEventListener('click', function() { resetAll(); });
+    wrap.appendChild(resetBtn);
+
+    var pzBox = document.createElement('div');
+    pzBox.id = 'pz-exportbox';
+    pzBox.style.cssText = 'display:none;margin-top:1rem;padding:1rem 1.2rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-size:0.75rem;color:var(--muted);max-width:900px;margin-left:auto;margin-right:auto;';
+    pzBox.innerHTML = '<div style="margin-bottom:0.5rem">📋 <strong style="color:var(--text)">Code für andere Geräte:</strong> Kopiere diesen Code und importiere ihn auf deinem anderen Gerät.</div>'
+      + '<input id="pz-code" type="text" readonly style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:0.4rem 0.7rem;color:var(--accent2);font-size:0.72rem;font-family:monospace;margin-bottom:0.6rem;">'
+      + '<div><input id="pz-import-field" type="text" placeholder="Code einfügen…" style="background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:0.4rem 0.7rem;color:var(--text);font-size:0.72rem;width:calc(100% - 100px);">'
+      + '<button onclick="importCode(document.getElementById(\'+"'pz-import-field'"+').value)" style="margin-left:8px;background:rgba(126,184,164,0.1);border:1px solid rgba(126,184,164,0.3);color:var(--accent2);padding:0.4rem 0.7rem;border-radius:5px;cursor:pointer;font-size:0.72rem;">Importieren</button></div>';
+    wrap.parentNode.insertBefore(pzBox, wrap.nextSibling);
+
+    document.getElementById('pz-btn').addEventListener('click', function() {
+      setTimeout(function() {
+        pzBox.style.display = editMode ? 'none' : 'block';
+        updateExportCode();
+      }, 10);
+    });
+
+    applyHidden();
+    updateExportCode();
+  });
+
+  window.importCode = importCode;
+})();
+
+// ── 4.1: (i)-Info-Button Toggle ────────────────────────────────────────────────
+(function() {
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.info-btn');
+    if (!btn) return;
+    var li = btn.closest('li');
+    if (!li) return;
+    var infoBox = li.querySelector('.link-info');
+    if (!infoBox) return;
+    var isVisible = infoBox.classList.contains('visible');
+    document.querySelectorAll('.link-info.visible').forEach(function(b) { b.classList.remove('visible'); });
+    document.querySelectorAll('.info-btn.active').forEach(function(b) { b.classList.remove('active'); });
+    if (!isVisible) {
+      infoBox.classList.add('visible');
+      btn.classList.add('active');
+    }
+    e.stopPropagation();
+  });
+})();
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WELH4D5T5C"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-WELH4D5T5C', { anonymize_ip: true, allow_google_signals: false });
+</script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"8607d2a720d14b038279025b2b5a82e5","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
